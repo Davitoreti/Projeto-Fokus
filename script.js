@@ -10,31 +10,33 @@ const botoes = document.querySelectorAll('.app__card-button');
 const musicaFocoInput = document.querySelector('#alternar-musica');
 const temporizador = document.querySelector('#start-pause');
 const iniciarOuPausarBt = document.querySelector('#start-pause span');
+const tempoNaTela = document.querySelector('#timer');
+const iniciarOuPausarBtIcone = document.querySelector(".app__card-primary-butto-icon");
 
 const musicaFoco = new Audio ('./sons/luna-rise-part-one.mp3');
 const beep = new Audio ('./sons/beep.mp3');
 const pause = new Audio ('./sons/pause.mp3');
 const play = new Audio ('./sons/play.wav');
-const duracaoFoco = 1500; 
-const duracaoDescansoCurto = 300; 
-const duracaoDescansoLongo = 900; 
+
+let tempoDecorridoEmSegundos = 1500;
+let intervaloId = null;
 
 musicaFoco.loop = true;
 
-let contagemTemporizador = 5;
-let intervaloId = null;
-
 focoBt.addEventListener('click', () => {
+    tempoDecorridoEmSegundos = 1500;
     alterarContexto('foco');
     focoBt.classList.add('active')
 });
 
 curtoBt.addEventListener('click', () => {
+    tempoDecorridoEmSegundos = 300;
     alterarContexto('descanso-curto');
     curtoBt.classList.add('active')
 });
 
 longoBt.addEventListener('click', () => {
+    tempoDecorridoEmSegundos = 900;
     alterarContexto('descanso-longo');
     longoBt.classList.add('active')
 });
@@ -48,6 +50,7 @@ musicaFocoInput.addEventListener('change', () => {
 });
 
 function alterarContexto (contexto) {
+    mostrarTempo();
     botoes.forEach(function (contexto) {
         contexto.classList.remove('active');
     });
@@ -62,27 +65,27 @@ function alterarContexto (contexto) {
             break;
         case "descanso-curto":
             titulo.innerHTML = `
-            Que tal dar uma respirada? <strong class="app__title-strong">Faça uma pausa curta.</strong>
+            Que tal dar uma respirada?<br> <strong class="app__title-strong">Faça uma pausa curta.</strong>
             `
             break;
         case "descanso-longo":
             titulo.innerHTML = `
-            Hora de voltar à superfície <strong class="app__title-strong">Faça uma pausa longa.</strong>
+            Hora de voltar à superfície!<br> <strong class="app__title-strong">Faça uma pausa longa.</strong>
             `
         default:
             break;
-    }
+    };
 };
 
 const contagemRegressiva = () => {
-    if (contagemTemporizador <= 0) {
+    if (tempoDecorridoEmSegundos <= 0) {
         beep.play()
         alert('Tempo finalizado!');
         zerar();
         return;
     }
-    contagemTemporizador -= 1;
-    console.log('Temporizador:' + contagemTemporizador);
+    tempoDecorridoEmSegundos -= 1;
+    mostrarTempo();
 };
 
 temporizador.addEventListener('click', iniciarOuPausar);
@@ -96,11 +99,21 @@ function iniciarOuPausar() {
     play.play();
     intervaloId = setInterval(contagemRegressiva, 1000);
     iniciarOuPausarBt.textContent = "Pausar";
-}
+    iniciarOuPausarBtIcone.setAttribute('src', `./imagens/pause.png`);
+};
     
 function zerar() {
     clearInterval(intervaloId);
     iniciarOuPausarBt.textContent = "Começar";
+    iniciarOuPausarBtIcone.setAttribute('src', `./imagens/play_arrow.png`);
     intervaloId = null;
-}
+};
+
+function mostrarTempo() {
+    const tempo = new Date(tempoDecorridoEmSegundos * 1000);
+    const tempoFormatado = tempo.toLocaleTimeString('pt-Br', {minute: '2-digit', second: '2-digit'});
+    tempoNaTela.innerHTML = `${tempoFormatado}`;
+};
+
+mostrarTempo();
 

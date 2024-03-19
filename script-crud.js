@@ -2,8 +2,13 @@ const btnAdicionarTarefa = document.querySelector('.app__button--add-task');
 const formAdicionarTarefa = document.querySelector('.app__form-add-task');
 const textarea = document.querySelector('.app__form-textarea');
 const ulTarefas = document.querySelector('.app__section-task-list');
+const btnCancelar = document.querySelector('.app__form-footer__button--cancel');
+const paragrafoDescricaoTarefa = document.querySelector('.app__section-active-task-description');
 
 const tarefas = JSON.parse(localStorage.getItem('tarefas')) || []
+
+let tarefaSelecionada = null
+liTarefaSelecionada = null
 
 function criarElementoTarefa (tarefa) {
     const li = document.createElement('li')
@@ -23,14 +28,27 @@ function criarElementoTarefa (tarefa) {
 
     const botao = document.createElement('button')
     botao.classList.add('app_button-edit')
+
     const img = document.createElement('img')
     img.setAttribute('src', '/imagens/edit.png')
     botao.append(img)
 
     botao.onclick = () => {
+        //debugger
         const novaDescricao = prompt('Qual é o novo nome da tarefa?')
+        if (novaDescricao) {
+        console.log('Nome da nova descrição:', novaDescricao)
         paragrafo.textContent = novaDescricao
+        tarefa.descricao = novaDescricao
+        alert('Tarefa atualizada!')
+        atualizarTarefas()
+        }
     }
+
+    li.addEventListener('click', () => {
+        paragrafoDescricaoTarefa.textContent = tarefa.descricao
+        
+    })
 
     li.append(svg)
     li.append(paragrafo)
@@ -60,3 +78,14 @@ tarefas.forEach(tarefa => {
     const elementoTarefa = criarElementoTarefa(tarefa)
     ulTarefas.append(elementoTarefa)
 })
+
+const atualizarTarefas = () => {
+    localStorage.setItem('tarefas', JSON.stringify(tarefas))
+}
+
+const limparFormulario = () => {
+    textarea.value = ''
+    formAdicionarTarefa.classList.add('hidden');
+}
+
+btnCancelar.addEventListener('click', limparFormulario);

@@ -30,7 +30,7 @@ focoBt.addEventListener('click', () => {
 });
 
 curtoBt.addEventListener('click', () => {
-    tempoDecorridoEmSegundos = 300;
+    tempoDecorridoEmSegundos = 2;
     alterarContexto('descanso-curto');
     curtoBt.classList.add('active')
 });
@@ -81,6 +81,11 @@ const contagemRegressiva = () => {
     if (tempoDecorridoEmSegundos <= 0) {
         beep.play()
         alert('Tempo finalizado!');
+        const focoAtivo = html.getAttribute('data-contexto') == 'foco'
+        if (focoAtivo) {
+            const evento = new CustomEvent('FocoFinalizado')
+            document.dispatchEvent(evento)
+        }
         zerar();
         return;
     }
